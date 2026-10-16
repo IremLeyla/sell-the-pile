@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sell the Pile</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="phone" id="app">
+
+    <!-- 1. Start -->
+    <section class="screen is-active" id="screen-start" aria-labelledby="start-title">
+      <p class="eyebrow">Sell the Pile</p>
+      <h1 id="start-title">Turn your pile of clothes into listings</h1>
+      <p class="lead">Photograph up to 6 items at once instead of one by one. Each item becomes a draft you can finish whenever you like, then sell on Vinted, Kleinanzeigen, or both.</p>
+
+      <ol class="how">
+        <li><span class="how-num" aria-hidden="true">1</span><span><strong>Lay out</strong> up to 6 items side by side</span></li>
+        <li><span class="how-num" aria-hidden="true">2</span><span><strong>Take one photo</strong> and get a draft for each item</span></li>
+        <li><span class="how-num" aria-hidden="true">3</span><span><strong>Finish later</strong> and sell on Vinted, Kleinanzeigen, or both</span></li>
+      </ol>
+
+      <div class="card">
+        <label class="field-label" id="count-label">How many items are in your pile?</label>
+        <div class="stepper" role="group" aria-labelledby="count-label">
+          <button class="stepper-btn" type="button" data-step="-1" aria-label="Fewer items">−</button>
+          <output id="pile-count" aria-live="polite">12</output>
+          <button class="stepper-btn" type="button" data-step="1" aria-label="More items">+</button>
+        </div>
+      </div>
+
+      <div class="tip">
+        <span class="tip-icon" aria-hidden="true">☀</span>
+        <p>Daylight from a window works best. If you can, do the whole pile in one session.</p>
+      </div>
+
+      <button class="btn btn-primary" type="button" data-go="layout" id="start-btn">Start session</button>
+    </section>
+
+    <!-- 2. Lay out a group -->
+    <section class="screen" id="screen-layout" aria-labelledby="layout-title">
+      <header class="topbar">
+        <button class="back" type="button" data-back aria-label="Back">←</button>
+        <span class="topbar-title" id="layout-group-label">Group 1</span>
+      </header>
+      <h2 id="layout-title">Lay out up to 6 items</h2>
+      <p class="lead">Lay them flat in two rows of three, near a window. Leave a little space between them.</p>
+
+      <div class="layout-grid" aria-hidden="true">
+        <div class="slot">1</div><div class="slot">2</div><div class="slot">3</div>
+        <div class="slot">4</div><div class="slot">5</div><div class="slot">6</div>
+      </div>
+
+      <button class="btn btn-primary" type="button" data-go="camera">I'm ready, take a photo</button>
+    </section>
+
+    <!-- 3. Camera -->
+    <section class="screen screen-dark" id="screen-camera" aria-labelledby="camera-title">
+      <header class="topbar">
+        <button class="back back-light" type="button" data-back aria-label="Back">←</button>
+        <h2 class="topbar-title" id="camera-title">Fit all items in the frame</h2>
+      </header>
+      <div class="viewfinder">
+        <div class="frame-guide" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <p class="viewfinder-text">Two rows of three. Keep the phone straight above the items.</p>
+      </div>
+      <input type="file" id="photo-input" accept="image/*" capture="environment" class="visually-hidden" tabindex="-1">
+      <button class="shutter" type="button" id="shutter" aria-label="Take photo"></button>
+      <button class="link-btn" type="button" id="use-sample">Use sample photo (demo)</button>
+    </section>
+
+    <!-- 3b. Facilitator only (Wizard of Oz recognition) -->
+    <section class="screen screen-facilitator" id="screen-facilitator" aria-labelledby="fac-title">
+      <p class="fac-badge">Facilitator only. Don't show the tester.</p>
+      <h2 id="fac-title">Name what's in each spot</h2>
+      <p class="lead">Type what the app should "recognise", e.g. "Black skirt". Leave a spot empty if nothing is there.</p>
+      <ul class="fac-list" id="fac-list"></ul>
+      <button class="btn btn-primary" type="button" id="fac-done">Continue to tester view</button>
+    </section>
+
+    <!-- 3c. Recognising -->
+    <section class="screen" id="screen-recognising" aria-labelledby="rec-title">
+      <div class="spinner" aria-hidden="true"></div>
+      <h2 id="rec-title" class="rec-title">Recognising your items…</h2>
+    </section>
+
+    <!-- 4. Check items -->
+    <section class="screen" id="screen-check" aria-labelledby="check-title">
+      <header class="topbar">
+        <button class="back" type="button" data-back aria-label="Retake photo">←</button>
+        <span class="topbar-title">Check your items</span>
+      </header>
+      <h2 id="check-title">We found <span id="found-count">0</span> items</h2>
+      <p class="lead" id="check-lead">Tap an item to leave it out of this session.</p>
+      <div class="photo" id="check-photo"></div>
+      <ul class="chips" id="check-list"></ul>
+      <button class="btn btn-primary" type="button" id="create-drafts">Create drafts</button>
+    </section>
+
+    <!-- 5. Drafts -->
+    <section class="screen" id="screen-drafts" aria-labelledby="drafts-title">
+      <h2 id="drafts-title">Your drafts</h2>
+      <div class="progress-card" aria-live="polite">
+        <div class="progress-numbers">
+          <span><strong id="stat-drafted">0</strong> drafted</span>
+          <span><strong id="stat-ready">0</strong> ready to sell</span>
+        </div>
+        <div class="bar" aria-hidden="true"><div class="bar-fill" id="pile-bar"></div></div>
+        <p class="progress-note" id="pile-note">0 of 12 items from your pile</p>
+      </div>
+      <ul class="draft-list" id="draft-list"></ul>
+      <div class="actions">
+        <button class="btn btn-primary" type="button" id="next-group">Photograph next group</button>
+        <button class="btn btn-secondary" type="button" id="finish-later">Finish for now</button>
+      </div>
+    </section>
+
+    <!-- 5b. Draft detail -->
+    <section class="screen" id="screen-detail" aria-labelledby="detail-title">
+      <header class="topbar">
+        <button class="back" type="button" data-back aria-label="Back to drafts">←</button>
+        <h2 class="topbar-title" id="detail-title">Draft</h2>
+      </header>
+      <div class="photo photo-single" id="detail-photo"></div>
+      <form id="detail-form" novalidate>
+        <label class="field-label" for="f-title">Title</label>
+        <input class="input" id="f-title" type="text" autocomplete="off" placeholder="Add a title" aria-describedby="title-hint">
+        <p class="hint" id="title-hint">Recognised from your photo. Change it if you like.</p>
+
+        <label class="field-label" for="f-price">Price</label>
+        <div class="input-prefix">
+          <span aria-hidden="true">€</span>
+          <input class="input" id="f-price" type="text" inputmode="decimal" autocomplete="off" placeholder="Your price" aria-describedby="price-error">
+        </div>
+        <p class="error" id="price-error" role="alert"></p>
+
+        <div class="row">
+          <div>
+            <label class="field-label" for="f-size">Size</label>
+            <select class="input" id="f-size">
+              <option value="">Add later</option>
+              <option>XS</option><option>S</option><option>M</option>
+              <option>L</option><option>XL</option><option>One size</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label" for="f-condition">Condition</label>
+            <select class="input" id="f-condition">
+              <option value="">Add later</option>
+              <option>New with tags</option>
+              <option>Very good</option>
+              <option>Good</option>
+              <option>Satisfactory</option>
+            </select>
+          </div>
+        </div>
+
+        <fieldset class="platforms" aria-describedby="platform-error">
+          <legend class="field-label">Where do you want to sell it? <span class="legend-hint">Choose one or both</span></legend>
+          <label class="platform"><input type="checkbox" name="platform" value="Vinted"><span>Vinted</span></label>
+          <label class="platform"><input type="checkbox" name="platform" value="Kleinanzeigen"><span>Kleinanzeigen</span></label>
+        </fieldset>
+        <p class="error" id="platform-error" role="alert"></p>
+
+        <label class="field-label" for="f-desc">Description</label>
+        <textarea class="input" id="f-desc" rows="3" placeholder="Add later"></textarea>
+
+        <div class="actions">
+          <button class="btn btn-primary" type="button" id="mark-ready">Mark ready</button>
+          <button class="btn btn-secondary" type="button" id="save-draft">Save draft</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- 6. Summary -->
+    <section class="screen" id="screen-summary" aria-labelledby="summary-title">
+      <div class="summary-badge" aria-hidden="true">✓</div>
+      <h2 id="summary-title"><span id="sum-drafted">0</span> items drafted</h2>
+      <p class="lead" id="sum-text">Your drafts are saved. Finish them whenever you like.</p>
+      <div class="card summary-stats">
+        <div><strong id="sum-ready">0</strong><span>ready to sell</span></div>
+        <div><strong id="sum-open">0</strong><span>drafts to finish</span></div>
+        <div><strong id="sum-left">0</strong><span>left in pile</span></div>
+      </div>
+      <button class="btn btn-primary" type="button" id="back-to-drafts">See my drafts</button>
+    </section>
+
+    <p class="proto-note">Prototype for testing. Photos stay on this device. Nothing is posted.</p>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
